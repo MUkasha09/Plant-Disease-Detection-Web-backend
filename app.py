@@ -72,28 +72,17 @@ def allowed_file(filename):
 # Load AI model with error handling
 def load_model():
     try:
-        # Use a relative path or environment variable for model path
         model_path = os.path.join(os.path.dirname(__file__), 'models', 'plant_disease_recog_model_pwp.keras')
         
-        # Try loading with Keras 3.x compatibility
-        try:
-            # First attempt: load with Keras 3.x (newer TensorFlow)
-            import keras
-            model = keras.saving.load_model(model_path)
-            return model
-        except Exception as e:
-            print(f"Keras 3.x load failed: {e}")
-            
-            # Second attempt: try with custom objects for compatibility
-            try:
-                model = tf.keras.models.load_model(
-                    model_path,
-                    custom_objects={'Functional': tf.keras.Model}
-                )
-                return model
-            except Exception as e2:
-                print(f"Custom objects load failed: {e2}")
-                return None
+        from keras.models import load_model
+        model = load_model(model_path)
+        
+        print("✅ Model loaded successfully")
+        return model
+
+    except Exception as e:
+        print(f"❌ Model loading failed: {e}")
+        return None
 
 # Load disease labels with error handling
 def load_disease_labels():
