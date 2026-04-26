@@ -73,9 +73,15 @@ def allowed_file(filename):
 def load_model():
     try:
         model_path = os.path.join(os.path.dirname(__file__), 'models', 'plant_disease_recog_model_pwp.keras')
-        return tf.keras.models.load_model(model_path)
+        
+        from keras.models import load_model
+        model = load_model(model_path)
+        
+        print("✅ Model loaded successfully")
+        return model
+
     except Exception as e:
-        print(f"Error loading model: {e}")
+        print(f"❌ Model loading failed: {e}")
         return None
 
 # Load disease labels with error handling
