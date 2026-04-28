@@ -72,10 +72,9 @@ def allowed_file(filename):
 # Load AI model with error handling
 def load_model():
     try:
-        model_path = os.path.join(os.path.dirname(__file__), 'models', 'plant_disease_recog_model_pwp.keras')
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'plant_disease_recog_model_pwp.h5')
         
-        from keras.models import load_model
-        model = load_model(model_path)
+        model = tf.keras.models.load_model(model_path)
         
         print("✅ Model loaded successfully")
         return model
