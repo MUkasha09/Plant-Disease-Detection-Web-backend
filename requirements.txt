@@ -4,9 +4,8 @@ Flask-Bcrypt==1.0.1
 Flask-Login==0.6.2
 Flask-CORS==4.0.0
 
-numpy==1.24.4   # IMPORTANT (TF 2.15 compatible)
-tensorflow==2.15.0
-
+numpy==2.0.2   # IMPORTANT (TF 2.15 compatible)
+tensorflow==2.19.0
 Werkzeug==2.3.7
 Pillow==10.0.0
 gunicorn==21.2.0
