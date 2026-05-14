@@ -6,10 +6,11 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import numpy as np
 import json
 import uuid
-from tflite_runtime.interpreter import Interpreter
+import tensorflow as tf
 from PIL import Image
 import os
 from werkzeug.utils import secure_filename
+from tensorflow.keras.applications.efficientnet import preprocess_input
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -72,21 +73,29 @@ def allowed_file(filename):
 
 # Load AI model with error handling
 def load_model():
+
     try:
+
         model_path = os.path.join(
             os.path.dirname(__file__),
             'models',
             'model.tflite'
         )
 
-        interpreter = Interpreter(model_path=model_path)
+        interpreter = tf.lite.Interpreter(
+            model_path=model_path
+        )
+
         interpreter.allocate_tensors()
 
         print("✅ TFLite model loaded successfully")
+
         return interpreter
 
     except Exception as e:
+
         print(f"❌ Model loading failed: {e}")
+
         return None
 
 # Load disease labels with error handling
@@ -107,10 +116,14 @@ plant_disease = load_disease_labels()
 def extract_features(image_path):
 
     try:
-        image = Image.open(image_path).convert("RGB")
-        image = image.resize((160, 160))
-        image_array = np.array(image).astype(np.float32)
-        image_array = image_array / 255.0
+        image = tf.keras.utils.load_img(
+            image_path,
+            target_size=(380, 380)
+        )
+
+        image_array = tf.keras.utils.img_to_array(image)
+
+        image_array = preprocess_input(image_array)
 
         return np.expand_dims(image_array, axis=0)
 
