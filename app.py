@@ -72,12 +72,17 @@ def allowed_file(filename):
 # Load AI model with error handling
 def load_model():
     try:
-        model_path = os.path.join(os.path.dirname(__file__), 'models', 'plant_disease_recog_model_pwp.h5')
-        
-        model = tf.keras.models.load_model(model_path)
-        
-        print("✅ Model loaded successfully")
-        return model
+        model_path = os.path.join(
+            os.path.dirname(__file__),
+            'models',
+            'model.tflite'
+        )
+
+        interpreter = tf.lite.Interpreter(model_path=model_path)
+        interpreter.allocate_tensors()
+
+        print("✅ TFLite model loaded successfully")
+        return interpreter
 
     except Exception as e:
         print(f"❌ Model loading failed: {e}")
@@ -102,24 +107,46 @@ def extract_features(image_path):
     try:
         image = tf.keras.utils.load_img(image_path, target_size=(160, 160))
         image_array = tf.keras.utils.img_to_array(image)
-        return np.array([image_array])
+        image_array = image_array.astype(np.float32)
+        image_array = image_array / 255.0
+        
+        return np.expand_dims(image_array, axis=0)
     except Exception as e:
         print(f"Error extracting features: {e}")
         return None
 
 # Model prediction function
 def model_predict(image_path):
+
     if not model or not plant_disease:
         return {"error": "Model or labels not loaded"}
-    
+
     img = extract_features(image_path)
+
     if img is None:
         return {"error": "Image processing error"}
-    
+
     try:
-        prediction = model.predict(img)
-        predicted_label = plant_disease[prediction.argmax()]
-        return {"disease": predicted_label, "confidence": float(prediction[0].max())}
+        input_details = model.get_input_details()
+        output_details = model.get_output_details()
+
+        model.set_tensor(input_details[0]['index'], img)
+
+        model.invoke()
+
+        prediction = model.get_tensor(output_details[0]['index'])
+
+        predicted_index = np.argmax(prediction)
+
+        predicted_label = plant_disease[str(predicted_index)]
+
+        confidence = float(np.max(prediction))
+
+        return {
+            "disease": predicted_label,
+            "confidence": confidence
+        }
+
     except Exception as e:
         print(f"Prediction error: {e}")
         return {"error": "Prediction failed"}
