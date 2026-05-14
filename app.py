@@ -6,7 +6,8 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import numpy as np
 import json
 import uuid
-import tensorflow as tf
+from tflite_runtime.interpreter import Interpreter
+from PIL import Image
 import os
 from werkzeug.utils import secure_filename
 
