@@ -118,7 +118,7 @@ def extract_features(image_path):
     try:
         image = tf.keras.utils.load_img(
             image_path,
-            target_size=(380, 380)
+            target_size=(160, 160)
         )
 
         image_array = tf.keras.utils.img_to_array(image)
