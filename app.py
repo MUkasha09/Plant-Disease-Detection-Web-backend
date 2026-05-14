@@ -79,7 +79,7 @@ def load_model():
             'model.tflite'
         )
 
-        interpreter = tf.lite.Interpreter(model_path=model_path)
+        interpreter = Interpreter(model_path=model_path)
         interpreter.allocate_tensors()
 
         print("✅ TFLite model loaded successfully")
