@@ -133,6 +133,7 @@ def model_predict(image_path):
 
     try:
         input_details = model.get_input_details()
+
         output_details = model.get_output_details()
 
         model.set_tensor(input_details[0]['index'], img)
@@ -143,17 +144,21 @@ def model_predict(image_path):
 
         predicted_index = np.argmax(prediction)
 
-        predicted_label = plant_disease[str(predicted_index)]
+        predicted_data = plant_disease[predicted_index]
 
         confidence = float(np.max(prediction))
 
         return {
-            "disease": predicted_label,
+            "disease": predicted_data["name"],
+            "cause": predicted_data["cause"],
+            "cure": predicted_data["cure"],
             "confidence": confidence
         }
 
     except Exception as e:
+
         print(f"Prediction error: {e}")
+
         return {"error": "Prediction failed"}
 
 # ==================== API ROUTES ====================
