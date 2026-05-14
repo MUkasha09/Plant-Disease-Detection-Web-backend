@@ -105,15 +105,19 @@ plant_disease = load_disease_labels()
 
 # Function to extract features
 def extract_features(image_path):
+
     try:
-        image = tf.keras.utils.load_img(image_path, target_size=(160, 160))
-        image_array = tf.keras.utils.img_to_array(image)
-        image_array = image_array.astype(np.float32)
+        image = Image.open(image_path).convert("RGB")
+        image = image.resize((160, 160))
+        image_array = np.array(image).astype(np.float32)
         image_array = image_array / 255.0
-        
+
         return np.expand_dims(image_array, axis=0)
+
     except Exception as e:
+
         print(f"Error extracting features: {e}")
+
         return None
 
 # Model prediction function
